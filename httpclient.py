@@ -33,7 +33,30 @@ class HTTPResponse(object):
         self.body = body
 
 class HTTPClient(object):
-    #def get_host_port(self,url):
+    # https://docs.python.org/3/library/urllib.parse.html
+    def get_host_port_path(self,url):
+        result = urllib.parse.urlparse(url)
+        return result.hostname, result.port, result.path
+
+    def urllib_obj(self, url):
+        return urllib.parse.urlparse(url)
+
+    def get_host_port(self, urllibObj):
+        if (urllibObj.port == None and urllibObj.scheme == "http"):
+            return urllibObj.hostname, 80
+        elif (urllibObj.port == None and urllibObj.scheme == "https"):
+            return urllibObj.hostname, 443
+        else:
+            return urllibObj.hostname, urllibObj.port
+
+    def get_path(self, urllibObj):
+        if urllibObj.path:
+            return urllibObj.path
+        else:
+            return "/"
+
+    def get_request_header(self, path, host):
+        return "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: close\r\nAccept: */*\r\n\r\n" %  (path, host)
 
     def connect(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,13 +64,13 @@ class HTTPClient(object):
         return None
 
     def get_code(self, data):
-        return None
+        return int(data.split()[1])
 
     def get_headers(self,data):
-        return None
+        return data.split('\r\n\r\n')[0]
 
     def get_body(self, data):
-        return None
+        return data.split('\r\n\r\n')[1]
     
     def sendall(self, data):
         self.socket.sendall(data.encode('utf-8'))
@@ -70,6 +93,21 @@ class HTTPClient(object):
     def GET(self, url, args=None):
         code = 500
         body = ""
+        urllibObj = self.urllib_obj(url)
+
+        target_host, target_port = self.get_host_port(urllibObj)
+        target_path = self.get_path(urllibObj)
+        self.connect(target_host, target_port)  
+        self.sendall(self.get_request_header(target_path, target_host))
+        response = self.recvall(self.socket)
+        code = self.get_code(response)
+        body = self.get_body(response)
+        header = self.get_headers(response)
+        
+        print(code)
+        print(header)
+        print(body)
+
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
