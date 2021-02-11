@@ -31,7 +31,7 @@ class HTTPResponse(object):
     def __init__(self, code=200, body=""):
         self.code = code
         self.body = body
-
+# Derived & referenced to Emalsha G.H.B. Link: https://emalsha.wordpress.com/2016/11/24/how-create-http-server-using-python-socket-part-ii/ 
 class HTTPClient(object):
     def get_host_port(self, urllibObj):
         if (urllibObj.port == None and urllibObj.scheme == "http"):
@@ -47,11 +47,11 @@ class HTTPClient(object):
         else:
             return "/"
 
-    # https://docs.python.org/3/library/urllib.parse.html
+    # Derived & referenced to Python documentation. Link: https://docs.python.org/3/library/urllib.parse.html
     def urllib_obj(self, url):
         return urllib.parse.urlparse(url)
 
-    def get_request_header(self, path, host):
+    def get_request(self, path, host):
         return f"GET {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\nAccept: */*\r\n\r\n" 
     
     def post_request(self, path, host, length, query):
@@ -100,12 +100,13 @@ class HTTPClient(object):
         target_host, target_port = self.get_host_port(urllibObj)
         target_path = self.get_path(urllibObj)
         self.connect(target_host, target_port)  
-        self.sendall(self.get_request_header(target_path, target_host))
+        self.sendall(self.get_request(target_path, target_host))
         response = self.recvall(self.socket)
         code = self.get_code(response)
         body = self.get_body(response)
         header = self.get_headers(response)
         
+        # Print output 
         print(code)
         print(header)
         print(body)
@@ -128,7 +129,7 @@ class HTTPClient(object):
         body = self.get_body(response)
         header = self.get_headers(response)
 
-        # Print out 
+        # Print output 
         print(code)
         print(header)
         print(body)
