@@ -52,7 +52,7 @@ class HTTPClient(object):
         return urllib.parse.urlparse(url)
 
     def get_request(self, path, host):
-        return f"GET {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\nAccept: */*\r\n\r\n" 
+        return f"GET {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\nAccept: */*\r\nAccept-Charset: UTF-8\r\n\r\n" 
     
     def post_request(self, path, host, length, query):
         return f"POST {path} HTTP/1.1\r\nHost: {host}\r\nAccept: */*\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: {length}\r\nConnection: close\r\n\r\n{query}\r\n" 
@@ -90,7 +90,7 @@ class HTTPClient(object):
                 buffer.extend(part)
             else:
                 done = not part
-        return buffer.decode('utf-8')
+        return buffer.decode(encoding='utf-8', errors="ignore")
 
     def GET(self, url, args=None):
         code = 500
