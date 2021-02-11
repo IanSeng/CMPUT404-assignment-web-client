@@ -57,6 +57,9 @@ class HTTPClient(object):
     def post_request(self, path, host, length, query):
         return f"POST {path} HTTP/1.1\r\nHost: {host}\r\nAccept: */*\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: {length}\r\nConnection: close\r\n\r\n{query}\r\n" 
 
+    def get_url_encoded(self, args):
+        return urllib.parse.urlencode(args) if args != None else urllib.parse.urlencode('')
+
     def connect(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
@@ -116,22 +119,19 @@ class HTTPClient(object):
         
         target_host, target_port = self.get_host_port(urllibObj)
         target_path = self.get_path(urllibObj)
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-        if args != None:
-            request_query = urllib.parse.urlencode(args)
-        else: 
-            request_query = urllib.parse.urlencode('')
-
-        request_query_length = len(request_query.encode('utf-8'))
-        
-        print(self.post_request(target_path, target_host, request_query_length, request_query))
+        request_query = self.get_url_encoded(args)
+        request_query_length = len(request_query.encode('utf-8'))        
         self.connect(target_host, target_port)
         self.sendall(self.post_request(target_path, target_host, request_query_length, request_query))
         response = self.recvall(self.socket)
         code = self.get_code(response)
         body = self.get_body(response)
         header = self.get_headers(response)
+
+        # Print out 
+        print(code)
+        print(header)
+        print(body)
         
         return HTTPResponse(code, body)
 
