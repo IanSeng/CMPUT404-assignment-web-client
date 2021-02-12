@@ -110,7 +110,7 @@ class HTTPClient(object):
         print(code)
         print(header)
         print(body)
-
+        self.close()
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
@@ -133,7 +133,7 @@ class HTTPClient(object):
         print(code)
         print(header)
         print(body)
-        
+        self.close()
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
