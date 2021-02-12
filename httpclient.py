@@ -31,6 +31,7 @@ class HTTPResponse(object):
     def __init__(self, code=200, body=""):
         self.code = code
         self.body = body
+        
 # Derived & referenced to Emalsha G.H.B. Link: https://emalsha.wordpress.com/2016/11/24/how-create-http-server-using-python-socket-part-ii/ 
 class HTTPClient(object):
     def get_host_port(self, urllibObj):
